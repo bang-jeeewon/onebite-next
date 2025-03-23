@@ -1,1 +1,8 @@
 /* 과감하게 전부 제거 */
+
+html,
+body {
+  margin: 0px;
+  padding: 0px;
+  background-color: rgb(250, 250, 250);
+}
