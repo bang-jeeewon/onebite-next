@@ -6,6 +6,8 @@ import SearchableLayout from '@/components/searchable-layout'
 import books from '@/mock/books.json'
 import BookItem from '@/components/book-item'
 import { InferGetServerSidePropsType } from 'next'
+import fetchBooks from '@/lib/fetch-books'
+import fetchRandomBooks from '@/lib/fetch-random-books'
 
 /**
  * 약속된 함수 이름인 getServerSideProps를 만들어서 export 해주면 SSR로 동작하게 됨
@@ -13,40 +15,34 @@ import { InferGetServerSidePropsType } from 'next'
  * 필요한 데이터를 또 다른 서버로부터 불러온다던가 하는 기능을 하는 함수
  * pre-rendering하는 과정에서 딱 한번만 실행이 될 것이기 때문에, 서버측에서 실행되는 함수라는걸 알고있어야 함
  */
-export const getServerSideProps = () => {
+export const getServerSideProps = async () => {
   // 페이지 역할하는 컴포넌트보다 먼저 실행되어서, 컴포넌트에 필요한 데이터 불러오는 함수
 
-  console.log('getServerSideProps') // 브라우저 측에서 출력이 안됨. 터미널에서 출력됨
+  // 직렬로, 두 API를 차례로 호출
+  // const allBooks = await fetchBooks()
+  // const recoBooks = await fetchRandomBooks()
 
-  const data = 'hello'
+  // 병렬로, 두 API를 동시에 호출
+  const [allBooks, recoBooks] = await Promise.all([fetchBooks(), fetchRandomBooks()])
 
   return {
-    props: {
-      data,
-    },
+    props: { allBooks, recoBooks },
   }
 }
 
 // Next.js에서 제공하는 알아서 타입을 추론해주는 InferGetServerSidePropsType
-export default function Home({ data }: InferGetServerSidePropsType<typeof getServerSideProps>) {
-  // console.log(data) // 서버에서 한번, 브라우저에서 한번 출력됨
-
-  // 브라우저에서만 실행하고 싶은 코드라면 useEffect로 마운트 시점에 실행하면 됨
-  useEffect(() => {
-    console.log(window)
-  }, [])
-
+export default function Home({ allBooks, recoBooks }: InferGetServerSidePropsType<typeof getServerSideProps>) {
   return (
     <div className={style.container}>
       <section>
         <h3>지금 추천하는 도서</h3>
-        {books.map((book) => (
+        {recoBooks.map((book) => (
           <BookItem key={book.id} {...book} />
         ))}
       </section>
       <section>
         <h3>등록된 모든 도서</h3>
-        {books.map((book) => (
+        {allBooks.map((book) => (
           <BookItem key={book.id} {...book} />
         ))}
       </section>
