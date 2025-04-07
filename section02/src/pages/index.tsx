@@ -59,3 +59,5 @@ export default function Home({ allBooks, recoBooks }: InferGetServerSidePropsTyp
 Home.getLayout = (page: ReactNode) => {
   return <SearchableLayout>{page}</SearchableLayout>
 }
+
+// SSG : 빌드 타임에 미리 백엔드 서버로부터 데이터 페칭을 마치고, 매번 똑같은 페이지만 응답함. 최신 데이터 반영은 어렵다. 하지만 매우 빠름. 사용자 경험 좋음.
