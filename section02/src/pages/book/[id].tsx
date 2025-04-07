@@ -19,7 +19,7 @@ export const getServerSideProps = async (context: GetServerSidePropsContext) => 
 export default function Page({ book }: InferGetServerSidePropsType<typeof getServerSideProps>) {
   if (!book) return '문제가 발생했습니다 다시 시도하세요' // book이 catch의 null일 경우
 
-  const { id, title, subTitle, description, author, publisher, coverImgUrl } = book
+  const { title, subTitle, description, author, publisher, coverImgUrl } = book
 
   return (
     <div className={style.container}>
