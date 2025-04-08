@@ -5,19 +5,29 @@
 import { GetStaticPropsContext, InferGetStaticPropsType } from 'next'
 import style from './[id].module.css'
 import fetchOneBook from '@/lib/fetch-one-book'
+import { useRouter } from 'next/router'
 
 export const getStaticPaths = () => {
   return {
     // url parameter 값은 반드시 문자열로 설정해줘야 함
     paths: [{ params: { id: '1' } }, { params: { id: '2' } }, { params: { id: '3' } }],
-    fallback: false, // 묻고 따지지 않고, 존재하지 않는 페이지는 notfound 페이지를 반환함
+    // fallback: false, // 묻고 따지지 않고, 존재하지 않는 페이지는 notfound 페이지를 반환함
+    // fallback: 'blocking', // 만약 빌드 타임에 사전 렌더링 해놓지 않은 동적 페이지 접속 요청 시, 마치 SSR처럼 그때 페이지를 만들어줌
+    fallback: true, // 똑같이 존재하지 않는 페이지의 요청을 받았을 때, 일단 Props(페이지에 필요한 데이터를 계산하는 getStaticProps의 return되는 props 객체) 없는 페이지 반환. 그냥 레이아웃 정도만 잡혀있는 페이지를 반환함. 그리고 나서 Props를 계산. 그러면 브라우저 입장에서는 일단 데이터가 없는 상태의 페이지를 렌더링하다가(로딩바를 보여준다든가), 서버가 Props의 계산을 마쳐서 데이터가 있는 상태의 페이지를 렌더링받게 됨
+    // 크롬 브라우저 'No throttling'에서 네트워크 속도를 느리게 할 수 있음.
+    // fallback 상태 : 페이지 컴포넌트가 아직 서버로부터 데이터를 전달받지 못한 상태
   }
 }
 
 export const getStaticProps = async (context: GetStaticPropsContext) => {
   const id = context.params!.id // undefined이 아닐거다
-
   const book = await fetchOneBook(Number(id))
+
+  if (!book) {
+    return {
+      notFound: true, // 404 페이지로 알아서 리다이렉트
+    }
+  }
 
   return {
     props: { book },
@@ -25,6 +35,9 @@ export const getStaticProps = async (context: GetStaticPropsContext) => {
 }
 
 export default function Page({ book }: InferGetStaticPropsType<typeof getStaticProps>) {
+  const router = useRouter()
+
+  if (router.isFallback) return '로딩중입니다' // fallback이 true일 때, 페이지 컴포넌트가 아직 서버로부터 데이터를 전달받지 못한 상태
   if (!book) return '문제가 발생했습니다 다시 시도하세요' // book이 catch의 null일 경우
 
   const { title, subTitle, description, author, publisher, coverImgUrl } = book
