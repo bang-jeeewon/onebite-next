@@ -27,6 +27,7 @@ export const getStaticProps = async () => {
 
   return {
     props: { allBooks, recoBooks },
+    revalidate: 3, // 이 페이지를 3초마다 재검증하겠다.
   }
 }
 
@@ -66,3 +67,7 @@ Home.getLayout = (page: ReactNode) => {
 // Static : 'getStaticProps'나 'getServerSideProps'를 사용하지 않은, 페이지로 만들었지만 아무런 설정을 해주지 않은 페이지. -> Next.js에서는 기본값으로 미리 빌드 타임에 미리 사전 렌더링하도록 함. 그냥 SSG랑 동일하게 동작한다고 생각하면 됨. default pre-rendering Next.js Page
 
 // Dynamic : SSR로 데이터 페칭을 하는 페이지
+
+// ISG : Incremental Static Generation.
+// 기존 SSG 방식의 장점 : 매우 빠른 속도로 응답 가능
+// 기존 SSR 방식의 장점 : 최신 데이터 반영 가능
