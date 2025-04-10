@@ -5,6 +5,7 @@ import BookItem from '@/components/book-item'
 import fetchBooks from '@/lib/fetch-books'
 import { useRouter } from 'next/router'
 import { BookData } from '@/types'
+import Head from 'next/head'
 
 // /search?q=방지원 -> { pathname: '/search', query: { q: '방지원' } } 인데, 콘솔에 router를 찍어보면 2번 찍힘. 1번은 서버에서, 2번은 클라이언트에서 찍힘. 쿼리스트링을 읽는 중에 컴포넌트를 한 번 더 렌더링하기 때문. 그래서 첫번째는 query에 {} 빈 객체. 두번째 콘솔에는 { q: '방지원' }이 찍힘.
 
@@ -41,6 +42,12 @@ export default function Page() {
 
   return (
     <div>
+      <Head>
+        <title>한입북스 - 검색결과</title>
+        <meta property='og:image' content='/thumbnail.png' />
+        <meta property='og:title' content='한입북스 - 검색결과' />
+        <meta property='og:description' content='한입 북스에 등록된 도서들을 만나보세요' />
+      </Head>
       {books.map((book) => (
         <BookItem key={book.id} {...book} />
       ))}

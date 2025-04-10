@@ -7,6 +7,7 @@ import BookItem from '@/components/book-item'
 import { InferGetStaticPropsType } from 'next'
 import fetchBooks from '@/lib/fetch-books'
 import fetchRandomBooks from '@/lib/fetch-random-books'
+import Head from 'next/head'
 
 /**
  * 약속된 함수 이름인 getServerSideProps를 만들어서 export 해주면 SSR로 동작하게 됨
@@ -15,7 +16,7 @@ import fetchRandomBooks from '@/lib/fetch-random-books'
  * pre-rendering하는 과정에서 딱 한번만 실행이 될 것이기 때문에, 서버측에서 실행되는 함수라는걸 알고있어야 함
  */
 export const getStaticProps = async () => {
-  console.log('인덱스 페이지') // npm run dev로 개발모드로 실행을 하면, 마치 SSR처럼 요청이 올 때마다 계속 페이지를 만드는 것처럼, 개발자 편의를 위해 그렇게 설계 되어있음
+  // console.log('인덱스 페이지') // npm run dev로 개발모드로 실행을 하면, 마치 SSR처럼 요청이 올 때마다 계속 페이지를 만드는 것처럼, 개발자 편의를 위해 그렇게 설계 되어있음
   // 페이지 역할하는 컴포넌트보다 먼저 실행되어서, 컴포넌트에 필요한 데이터 불러오는 함수
 
   // 직렬로, 두 API를 차례로 호출
@@ -34,20 +35,29 @@ export const getStaticProps = async () => {
 // Next.js에서 제공하는 알아서 타입을 추론해주는 InferGetServerSidePropsType
 export default function Home({ allBooks, recoBooks }: InferGetStaticPropsType<typeof getStaticProps>) {
   return (
-    <div className={style.container}>
-      <section>
-        <h3>지금 추천하는 도서</h3>
-        {recoBooks.map((book) => (
-          <BookItem key={book.id} {...book} />
-        ))}
-      </section>
-      <section>
-        <h3>등록된 모든 도서</h3>
-        {allBooks.map((book) => (
-          <BookItem key={book.id} {...book} />
-        ))}
-      </section>
-    </div>
+    <>
+      {/* Next.js에서는 Head 태그를 통해서 페이지별 필요한 메타 태그를 별도로 설정 */}
+      <Head>
+        <title>한입북스</title>
+        <meta property='og:image' content='/thumbnail.png' />
+        <meta property='og:title' content='한입북스' />
+        <meta property='og:description' content='한입 북스에 등록된 도서들을 만나보세요' />
+      </Head>
+      <div className={style.container}>
+        <section>
+          <h3>지금 추천하는 도서</h3>
+          {recoBooks.map((book) => (
+            <BookItem key={book.id} {...book} />
+          ))}
+        </section>
+        <section>
+          <h3>등록된 모든 도서</h3>
+          {allBooks.map((book) => (
+            <BookItem key={book.id} {...book} />
+          ))}
+        </section>
+      </div>
+    </>
   )
 }
 
