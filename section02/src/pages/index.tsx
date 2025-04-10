@@ -15,7 +15,7 @@ import fetchRandomBooks from '@/lib/fetch-random-books'
  * pre-rendering하는 과정에서 딱 한번만 실행이 될 것이기 때문에, 서버측에서 실행되는 함수라는걸 알고있어야 함
  */
 export const getStaticProps = async () => {
-  console.log('getStaticProps') // npm run dev로 개발모드로 실행을 하면, 마치 SSR처럼 요청이 올 때마다 계속 페이지를 만드는 것처럼, 개발자 편의를 위해 그렇게 설계 되어있음
+  console.log('인덱스 페이지') // npm run dev로 개발모드로 실행을 하면, 마치 SSR처럼 요청이 올 때마다 계속 페이지를 만드는 것처럼, 개발자 편의를 위해 그렇게 설계 되어있음
   // 페이지 역할하는 컴포넌트보다 먼저 실행되어서, 컴포넌트에 필요한 데이터 불러오는 함수
 
   // 직렬로, 두 API를 차례로 호출
@@ -27,7 +27,7 @@ export const getStaticProps = async () => {
 
   return {
     props: { allBooks, recoBooks },
-    revalidate: 3, // 이 페이지를 3초마다 재검증하겠다.
+    // revalidate: 3, // 이 페이지를 3초마다 재검증하겠다.
   }
 }
 
@@ -68,6 +68,9 @@ Home.getLayout = (page: ReactNode) => {
 
 // Dynamic : SSR로 데이터 페칭을 하는 페이지
 
-// ISG : Incremental Static Generation.
+// ISR : Incremental Static Generation.
 // 기존 SSG 방식의 장점 : 매우 빠른 속도로 응답 가능
 // 기존 SSR 방식의 장점 : 최신 데이터 반영 가능
+// ISR을 적용하기 어려운 페이지도 있음 : 시간과 관계없이 사용자의 행동에 따라 데이터가 업데이트 되는 페이지
+// On-Demand(요청을 받을 때마다) ISR : 그래서 Next.js는 시간에 따른이 아닌 사용자의 요청에 따라 데이터가 업데이트 되는 기능을 제공
+// API Routes를 통해서 요청을 받았을 때, 해당 페이지를 재생성함. 새로고침하면 데이터가 달라져있을 것임
