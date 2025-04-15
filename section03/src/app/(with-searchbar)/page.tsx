@@ -1,6 +1,6 @@
-import ClientComponent from './client-component'
+import ClientComponent from '../../components/client-component'
 import styles from './page.module.css'
-import ServerComponent from './server-component'
+import ServerComponent from '../../components/server-component'
 
 export default function Home() {
   return (
@@ -50,4 +50,16 @@ export default function Home() {
 // 4. 서버 컴포넌트에서 클라이언트 컴포넌트에게 직렬화 되지 않는 Props는 전달 불가하다
 
 // 직렬화(Serialization) : 객체, 배열, 클래스 등의 복잡한 구조의 데이터를 네트워크 상으로 전송하기 위해 아주 단순한 형태(문자열, Byte)로 변환하는 것. 근데 함수는 직렬화할 수 없음.
+// 직렬화 After : {"name":"방지원","age":25}
+// 사전 렌더링 과정 중에는 엄밀히 말하면, 서버 컴포넌트들만 먼저 따로 실행이 됨(RSC payload라는 json과 비슷한 데이터 결과물)
+// RSC payload에는 서버 컴포넌트의 모든 데이터가 포함됨
+// 서버 컴포넌트의 렌더링 결과, 연결된 클라이언트 컴포넌트의 위치, 클라이언트 컴포넌트에게 전달하는 props 값
+// 그 이후에는 Client Component도 실행되어서, RSC payload와 합쳐져서 => HTML 페이지가 생성됨
+// 근데 이 직렬화하는 과정에서, 부모인 서버 컴포넌트가 자식인 클라이언트 컴포넌트에 props로 함수를 전달하고 있다면, 함수도 직렬화되어서 RSC payload에 포함이 되어야 함. 근데 그게 안됨. 함수는 직렬화가 불가능하기 때문. Runtime Error 발생. Error: Function cannat be passed directly to Client Component.
 // 그래서 서버 컴포넌트 > 클라이언트 컴포넌트 일 때, function은 Props로 전달 불가(직렬화 안됨)
+
+// 네비게이팅
+// App Router에서는 서버에서 브라우저로 JS Bundle을 보낼 때, 서버 컴포넌트 실행 결과물인 RSC payload도 같이 보냄
+// JS Bundle에는 클라이언트 컴포넌트 정보만 포함됨
+// RSC Payload에는 서버 컴포넌트 정보만 포함됨
+// 그럼 브라우저는 위 두개를 받아서, JS를 실행해서 RSC Payload와 합쳐서 페이지 교체를 함
