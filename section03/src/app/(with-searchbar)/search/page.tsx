@@ -1,18 +1,22 @@
 // 이 컴포넌트가 React의 Server Component이기 때문에 async await를 사용할 수 있음
 // 서버에서 사전 렌더링을 위해서 딱 한 번 실행이 됨
 
-import ClientComponent from '@/components/client-component'
+// import ClientComponent from '@/components/client-component'
+import books from '@/mock/books.json'
+import BookItem from '@/components/book-item'
 
-// 서버 컴포넌트 (RSC Payload) search?_rsc=erfjf
-export default async function Page({ searchParams }: { searchParams: Promise<{ q?: string }> }) {
-  const { q } = await searchParams
+export default function Page({
+  searchParams,
+}: {
+  searchParams: Promise<{
+    q?: string
+  }>
+}) {
   return (
     <div>
-      Search 페이지 : {q}
-      {/* 이 클라이언트 컴포넌트와 (JS Bundle) page.js */}
-      <ClientComponent>
-        <></>
-      </ClientComponent>
+      {books.map((book) => (
+        <BookItem key={book.id} {...book} />
+      ))}
     </div>
   )
 }
